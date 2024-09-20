@@ -15,7 +15,23 @@ class RenderSettingsPage
 
     private function retrieveGlobalClasses()
     {
-        return get_option('bricks_global_classes', []);
+        $global_classes = get_option('bricks_global_classes', []);
+        $categories = $this->retrieveClassCategories();
+
+        // Create a mapping of category IDs to names
+        $categoryMap = [];
+        foreach ($categories as $category) {
+            $categoryMap[$category['id']] = $category['name'];
+        }
+
+        // Map the category names to the global classes
+        foreach ($global_classes as &$class) {
+            if (isset($class['category'])) {
+                $class['category'] = $categoryMap[$class['category']] ?? 'Uncategorized';
+            }
+        }
+
+        return $global_classes;
     }
 
     private function handlePostRequest(&$global_classes)
@@ -77,7 +93,7 @@ class RenderSettingsPage
     {
 ?>
         <script src="https://cdn.tailwindcss.com"></script>
-        <div class="wrap" data-classes='<?php echo json_encode(array_column($global_classes, 'name')); ?>'>
+        <div class="wrap" data-classes='<?php echo json_encode($global_classes); ?>'>
             <?php echo $this->renderTitle('Class Manager'); ?>
             <div class="flex gap-4">
                 <?php $this->renderForms(); ?>

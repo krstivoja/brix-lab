@@ -8,12 +8,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to render class list with checkboxes
     function renderClassList(classes) {
         const uniqueClasses = [...new Set(classes)]; // Remove duplicates
-        resultsContainer.innerHTML = uniqueClasses.map(className => `
-            <li>
-                <input type="checkbox" class="class-checkbox" value="${className}" />
-                ${className}
-            </li>
-        `).join('');
+        resultsContainer.innerHTML = uniqueClasses.map(classInfo => {
+            const category = classInfo.category ? classInfo.category : 'Uncategorized';
+            return `
+                <li>
+                    <input type="checkbox" class="class-checkbox" value="${classInfo.name}" />
+                    ${classInfo.name} - <em>${category}</em>
+                </li>
+            `;
+        }).join('');
     }
 
     // Display all classes by default
@@ -35,11 +38,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
 
-        const filteredClasses = classList.filter(className => {
-            const matchesSearchTerm = className.toLowerCase().includes(searchTerm);
+        const filteredClasses = classList.filter(classInfo => {
+            const matchesSearchTerm = classInfo.name.toLowerCase().includes(searchTerm);
             const matchesCategory = selectedCategory === 'all' ||
-                (selectedCategory === 'uncategorized' && !className.category) ||
-                (className.category === selectedCategory);
+                (selectedCategory === 'uncategorized' && classInfo.category === null) ||
+                (classInfo.category === selectedCategory);
             return matchesSearchTerm && matchesCategory;
         });
 
@@ -52,13 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedClasses = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
 
         // Remove selected classes from the original classList
-        const updatedClassList = classList.filter(className => !selectedClasses.includes(className));
+        const updatedClassList = classList.filter(classInfo => !selectedClasses.includes(classInfo.name));
 
         // Update the displayed class list
         renderClassList(updatedClassList);
-
-        // Optionally, you can send an AJAX request to update the server-side data
-        // Example: updateClassesOnServer(updatedClassList);
     });
 
     // Add this function to render the preview of class names
@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const suffix = document.getElementById('suffix').value;
 
         const previewContainer = document.getElementById('preview_results');
-        const previewList = classList.map(className => {
-            const newClassName = className.replace(searchTerm, replaceTerm);
+        const previewList = classList.map(classInfo => {
+            const newClassName = classInfo.name.replace(searchTerm, replaceTerm);
             return `
                 <li>
-                    Current: ${className} <br />
+                    Current: ${classInfo.name} <br />
                     Replaced: ${prefix}${newClassName}${suffix}
                 </li>
             `;
@@ -85,4 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('replace_term').addEventListener('input', renderPreview);
     document.getElementById('prefix').addEventListener('input', renderPreview);
     document.getElementById('suffix').addEventListener('input', renderPreview);
+
+    console.log(classList);
 });
