@@ -39,10 +39,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
 
         const filteredClasses = classList.filter(classInfo => {
+            // Check if the class name matches the search term
             const matchesSearchTerm = classInfo.name.toLowerCase().includes(searchTerm);
-            const matchesCategory = selectedCategory === 'all' ||
-                (selectedCategory === 'uncategorized' && classInfo.category === null) ||
-                (classInfo.category === selectedCategory);
+
+            // Check if the class matches the selected category
+            let matchesCategory = false;
+            if (selectedCategory === 'all') {
+                matchesCategory = true; // Show all classes
+            } else if (selectedCategory === 'uncategorized') {
+                // Check for null, undefined, or empty string for "Uncategorized"
+                matchesCategory = !classInfo.category || classInfo.category.trim() === '';
+            } else {
+                matchesCategory = classInfo.category === selectedCategory;
+            }
 
             return matchesSearchTerm && matchesCategory;
         });
