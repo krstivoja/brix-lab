@@ -45,7 +45,7 @@ class RenderSettingsPage
             if (!in_array($new_class, array_column($global_classes, 'name'))) {
                 $global_classes[] = [
                     'name' => $new_class,
-                    'category' => $selected_category // Add the selected category
+                    'category' => $selected_category === 'uncategorized' ? null : $selected_category // Set to null if uncategorized
                 ];
             }
         }
@@ -119,9 +119,12 @@ class RenderSettingsPage
             </div>
             <div class="flex flex-col gap-2">
                 <label>Category:</label>
+                <label>
+                    <input type="radio" name="class_category" value="uncategorized" required> Uncategorized
+                </label>
                 <?php foreach ($categories as $category): ?>
                     <label>
-                        <input type="radio" name="class_category" value="<?php echo esc_attr($category['id']); ?>" required> <?php echo esc_html($category['name']); ?>
+                        <input type="radio" name="class_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
                     </label>
                 <?php endforeach; ?>
             </div>
