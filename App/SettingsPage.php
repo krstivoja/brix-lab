@@ -112,7 +112,9 @@ class SettingsPage
     {
         foreach ($classes as &$class) {
             if (strpos($class['name'], $search_term) !== false) {
-                $class['name'] = str_replace($search_term, $prefix . $replace_term . $suffix, $class['name']);
+                $class['name'] = $prefix . $class['name'] . $suffix;
+            } else {
+                $class['name'] = $prefix . $class['name'] . $suffix;
             }
         }
         return $classes;
