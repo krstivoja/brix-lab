@@ -17,3 +17,10 @@ add_action('admin_enqueue_scripts', function () {
     wp_enqueue_style('settings-page-css', plugin_dir_url(__FILE__) . 'assets/style.css');
     wp_enqueue_script('settings-page-js', plugin_dir_url(__FILE__) . 'assets/main.js', [], null, true);
 });
+
+add_action('wp_enqueue_scripts', function () {
+    // Check if the Bricks builder function exists and is active
+    if (function_exists('bricks_is_builder') && bricks_is_builder()) {
+        wp_enqueue_script('in-brick-editor', plugin_dir_url(__FILE__) . 'assets/in-brick-editor.js', [], null, true);
+    }
+});

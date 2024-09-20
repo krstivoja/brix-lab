@@ -78,11 +78,11 @@ class RenderSettingsPage
 ?>
         <script src="https://cdn.tailwindcss.com"></script>
         <div class="wrap" data-classes='<?php echo json_encode(array_column($global_classes, 'name')); ?>'>
-            <h1>Bricks Lab Settings</h1>
+            <?php echo $this->renderTitle('Class Manager'); ?>
             <div class="flex gap-4">
                 <?php $this->renderForms(); ?>
                 <div class="flex flex-col gap-4 bg-white p-4 rounded-md h-full min-w-[500px]">
-                    <h2 class="text-4xl font-bold">Available Classes</h2>
+                    <?php echo $this->renderTitle('Available Classes'); ?>
                     <ul id="search_results"></ul>
                     <button id="delete_selected" class="mt-4">Delete Selected</button>
                     <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
@@ -100,23 +100,26 @@ class RenderSettingsPage
         $categories = $this->retrieveClassCategories();
     ?>
         <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
+            <?php echo $this->renderTitle('Search form'); ?>
             <div class="flex flex-col gap-2">
                 <label for="search_term">Search Term:</label>
                 <input type="text" id="search_term" name="search_term" required>
             </div>
             <div class="flex flex-col gap-2">
-                <label>Search in Categories:</label>
-                <label>
-                    <input type="radio" name="search_category" value="all" required checked> All
-                </label>
-                <label>
-                    <input type="radio" name="search_category" value="uncategorized"> Uncategorized
-                </label>
-                <?php foreach ($categories as $category): ?>
+                <b><label>Search in Categories:</label></b>
+                <div class="ml-2 flex flex-col gap-2">
                     <label>
-                        <input type="radio" name="search_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                        <input type="radio" name="search_category" value="all" required checked> All
                     </label>
-                <?php endforeach; ?>
+                    <label>
+                        <input type="radio" name="search_category" value="uncategorized"> Uncategorized
+                    </label>
+                    <?php foreach ($categories as $category): ?>
+                        <label>
+                            <input type="radio" name="search_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
             </div>
             <div class="flex flex-col gap-2">
                 <label for="replace_term">Replace Term:</label>
@@ -140,20 +143,24 @@ class RenderSettingsPage
         $categories = $this->retrieveClassCategories();
     ?>
         <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
+            <?php echo $this->renderTitle('Add New Classes'); ?>
+
             <div class="flex flex-col gap-2">
-                <label for="new_classes">Add New Classes (one per row):</label>
+                <label for="new_classes">one per row</label>
                 <textarea id="new_classes" name="new_classes" rows="10"></textarea>
             </div>
             <div class="flex flex-col gap-2">
-                <label>Category:</label>
-                <label>
-                    <input type="radio" name="class_category" value="uncategorized" required> Uncategorized
-                </label>
-                <?php foreach ($categories as $category): ?>
+                <b><label>Assign to Category:</label></b>
+                <div class="ml-2 flex flex-col gap-2">
                     <label>
-                        <input type="radio" name="class_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                        <input type="radio" name="class_category" value="uncategorized" required> Uncategorized
                     </label>
-                <?php endforeach; ?>
+                    <?php foreach ($categories as $category): ?>
+                        <label>
+                            <input type="radio" name="class_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
             </div>
             <button type="submit">Add Classes</button>
         </form>
@@ -166,5 +173,10 @@ class RenderSettingsPage
         $decoded_categories = maybe_unserialize($categories);
 
         return is_array($decoded_categories) ? $decoded_categories : [];
+    }
+
+    private function renderTitle($text)
+    {
+        return "<h2 class='text-2xl font-bold'>{$text}</h2>";
     }
 }
