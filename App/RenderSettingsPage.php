@@ -14,7 +14,9 @@ class RenderSettingsPage
             } elseif (isset($_POST['new_classes'])) {
                 $new_classes = array_filter(array_map('trim', explode("\n", $_POST['new_classes'])));
                 foreach ($new_classes as $new_class) {
-                    $global_classes[] = ['name' => $new_class];
+                    if (!in_array($new_class, array_column($global_classes, 'name'))) {
+                        $global_classes[] = ['name' => $new_class];
+                    }
                 }
             } elseif (isset($_POST['search_term'], $_POST['replace_term'])) {
                 $global_classes = $this->find_and_replace_classes(
@@ -32,12 +34,11 @@ class RenderSettingsPage
         <div class="wrap" data-classes='<?php echo json_encode(array_column($global_classes, 'name')); ?>'>
             <h1>Bricks Lab Settings</h1>
             <div class="flex gap-12">
-
                 <div class="flex flex-col gap-4 bg-white p-4 rounded-md h-full min-w-[500px]">
                     <h2 class="text-4xl font-bold">Available Classes</h2>
                     <ul id="search_results"></ul>
+                    <button id="delete_selected" class="mt-4">Delete Selected</button>
                 </div>
-
                 <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
                     <div class="flex flex-col gap-2">
                         <label for="search_term">Search Term:</label>
