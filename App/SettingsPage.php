@@ -111,9 +111,7 @@ class SettingsPage
     private function find_and_replace_classes($classes, $search_term, $replace_term, $prefix, $suffix)
     {
         foreach ($classes as &$class) {
-            if (strpos($class['name'], $search_term) !== false) {
-                $class['name'] = $prefix . $class['name'] . $suffix;
-            } else {
+            if ($search_term === '*' || strpos($class['name'], $search_term) !== false) {
                 $class['name'] = $prefix . $class['name'] . $suffix;
             }
         }
