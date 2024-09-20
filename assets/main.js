@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resultsContainer.innerHTML = uniqueClasses.map(classInfo => {
             const category = classInfo.category ? classInfo.category : 'Uncategorized';
             return `
-                <li>
+                <li data-category="${category}">
                     <input type="checkbox" class="class-checkbox" value="${classInfo.name}" />
                     ${classInfo.name} - <em>${category}</em>
                 </li>
@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const matchesCategory = selectedCategory === 'all' ||
                 (selectedCategory === 'uncategorized' && classInfo.category === null) ||
                 (classInfo.category === selectedCategory);
+
+            // Check if the classInfo's category matches the selected category
             return matchesSearchTerm && matchesCategory;
         });
 
