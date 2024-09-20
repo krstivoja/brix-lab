@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultsContainer = document.getElementById('search_results');
     const deleteButton = document.getElementById('delete_selected');
     const classList = JSON.parse(document.querySelector('.wrap').getAttribute('data-classes'));
+    const categoryRadios = document.querySelectorAll('input[name="search_category"]');
 
     // Function to render class list with checkboxes
     function renderClassList(classes) {
@@ -18,11 +19,32 @@ document.addEventListener('DOMContentLoaded', function () {
     // Display all classes by default
     renderClassList(classList);
 
+    // Filter classes based on search term
     searchInput.addEventListener('input', function () {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filteredClasses = classList.filter(className => className.toLowerCase().includes(searchTerm));
-        renderClassList(filteredClasses);
+        filterClasses();
     });
+
+    // Filter classes based on selected category
+    categoryRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            filterClasses();
+        });
+    });
+
+    function filterClasses() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
+
+        const filteredClasses = classList.filter(className => {
+            const matchesSearchTerm = className.toLowerCase().includes(searchTerm);
+            const matchesCategory = selectedCategory === 'all' ||
+                (selectedCategory === 'uncategorized' && !className.category) ||
+                (className.category === selectedCategory);
+            return matchesSearchTerm && matchesCategory;
+        });
+
+        renderClassList(filteredClasses);
+    }
 
     // Delete selected classes
     deleteButton.addEventListener('click', function () {

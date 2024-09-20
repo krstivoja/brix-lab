@@ -25,12 +25,14 @@ class RenderSettingsPage
         } elseif (isset($_POST['new_classes'])) {
             $this->addNewClasses($global_classes);
         } elseif (isset($_POST['search_term'], $_POST['replace_term'])) {
+            $search_category = $_POST['search_category'] ?? 'all'; // Get the selected category
             $global_classes = $this->findAndReplaceClasses(
                 $global_classes,
                 $_POST['search_term'],
                 $_POST['replace_term'],
                 $_POST['prefix'] ?? '',
-                $_POST['suffix'] ?? ''
+                $_POST['suffix'] ?? '',
+                $search_category // Pass the selected category
             );
         }
         update_option('bricks_global_classes', $global_classes);
@@ -51,11 +53,21 @@ class RenderSettingsPage
         }
     }
 
-    private function findAndReplaceClasses($classes, $search_term, $replace_term, $prefix, $suffix)
+    private function findAndReplaceClasses($classes, $search_term, $replace_term, $prefix, $suffix, $search_category)
     {
         foreach ($classes as &$class) {
-            if ($search_term === '*' || strpos($class['name'], $search_term) !== false) {
-                $class['name'] = $prefix . $class['name'] . $suffix;
+            // Check if the class matches the selected category
+            if (
+                $search_category === 'all' ||
+                ($search_category === 'uncategorized' && $class['category'] === null) ||
+                ($class['category'] === $search_category)
+            ) {
+                // Check if the search term matches
+                if ($search_term === '*' || strpos($class['name'], $search_term) !== false) {
+                    // Replace the class name
+                    $class['name'] = str_replace($search_term, $replace_term, $class['name']);
+                    $class['name'] = $prefix . $class['name'] . $suffix; // Add prefix and suffix
+                }
             }
         }
         return $classes;
@@ -67,7 +79,7 @@ class RenderSettingsPage
         <script src="https://cdn.tailwindcss.com"></script>
         <div class="wrap" data-classes='<?php echo json_encode(array_column($global_classes, 'name')); ?>'>
             <h1>Bricks Lab Settings</h1>
-            <div class="flex gap-12">
+            <div class="flex gap-4">
                 <?php $this->renderForms(); ?>
                 <div class="flex flex-col gap-4 bg-white p-4 rounded-md h-full min-w-[500px]">
                     <h2 class="text-4xl font-bold">Available Classes</h2>
@@ -85,11 +97,26 @@ class RenderSettingsPage
 
     private function renderForms()
     {
+        $categories = $this->retrieveClassCategories();
     ?>
         <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
             <div class="flex flex-col gap-2">
                 <label for="search_term">Search Term:</label>
                 <input type="text" id="search_term" name="search_term" required>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label>Search in Categories:</label>
+                <label>
+                    <input type="radio" name="search_category" value="all" required checked> All
+                </label>
+                <label>
+                    <input type="radio" name="search_category" value="uncategorized"> Uncategorized
+                </label>
+                <?php foreach ($categories as $category): ?>
+                    <label>
+                        <input type="radio" name="search_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                    </label>
+                <?php endforeach; ?>
             </div>
             <div class="flex flex-col gap-2">
                 <label for="replace_term">Replace Term:</label>
