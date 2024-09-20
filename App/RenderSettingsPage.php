@@ -34,11 +34,7 @@ class RenderSettingsPage
         <div class="wrap" data-classes='<?php echo json_encode(array_column($global_classes, 'name')); ?>'>
             <h1>Bricks Lab Settings</h1>
             <div class="flex gap-12">
-                <div class="flex flex-col gap-4 bg-white p-4 rounded-md h-full min-w-[500px]">
-                    <h2 class="text-4xl font-bold">Available Classes</h2>
-                    <ul id="search_results"></ul>
-                    <button id="delete_selected" class="mt-4">Delete Selected</button>
-                </div>
+
                 <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
                     <div class="flex flex-col gap-2">
                         <label for="search_term">Search Term:</label>
@@ -59,9 +55,15 @@ class RenderSettingsPage
                     <button type="submit">Update</button>
                 </form>
 
-                <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
-                    <button type="submit" name="delete_all" value="1">Delete All Classes</button>
-                </form>
+                <div class="flex flex-col gap-4 bg-white p-4 rounded-md h-full min-w-[500px]">
+                    <h2 class="text-4xl font-bold">Available Classes</h2>
+                    <ul id="search_results"></ul>
+                    <button id="delete_selected" class="mt-4">Delete Selected</button>
+
+                    <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
+                        <button type="submit" name="delete_all" value="1">Delete All Classes</button>
+                    </form>
+                </div>
 
                 <form method="post" action="" class="flex flex-col gap-4 bg-white p-4 rounded-md h-full w-full">
                     <div class="flex flex-col gap-2">
