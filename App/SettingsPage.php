@@ -57,10 +57,19 @@ class SettingsPage
                 searchInput.addEventListener('input', function() {
                     const searchTerm = searchInput.value.toLowerCase();
                     const filteredClasses = classList.filter(className => className.toLowerCase().includes(searchTerm));
-                    resultsContainer.innerHTML = filteredClasses.map(className => `<li>${className}</li>`).join('');
+                    resultsContainer.innerHTML = filteredClasses.map(className => {
+                        const highlightedName = className.replace(new RegExp(`(${searchTerm})`, 'gi'), '<span class="highlight">$1</span>');
+                        return `<li>${highlightedName}</li>`;
+                    }).join('');
                 });
             });
         </script>
+
+        <style>
+            .highlight {
+                background-color: yellow;
+            }
+        </style>
 
         <div class="wrap">
             <h1>Bricks Lab Settings</h1>
