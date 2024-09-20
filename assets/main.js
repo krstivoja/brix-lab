@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
         resultsContainer.innerHTML = uniqueClasses.map(classInfo => {
             const category = classInfo.category ? classInfo.category : 'Uncategorized';
             return `
-                <li data-category="${category}">
-                    <input type="checkbox" class="class-checkbox" value="${classInfo.name}" />
-                    ${classInfo.name} - <em>${category}</em>
+                <li data-category="${category}" class="class-item w-full border-b border-slate-200 p-2 flex gap-2">
+                    <input type="checkbox" class="class-checkbox !m-0 !mt-[2px]" value="${classInfo.name}" />
+                    ${classInfo.name} <div class="text-xs bg-slate-100 p-1 rounded-md !ml-auto inline-block">${category}</div>
                 </li>
             `;
         }).join('');
@@ -95,6 +95,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('replace_term').addEventListener('input', renderPreview);
     document.getElementById('prefix').addEventListener('input', renderPreview);
     document.getElementById('suffix').addEventListener('input', renderPreview);
+
+    // Add event listener to toggle checkbox on text selection
+    resultsContainer.addEventListener('click', function (event) {
+        const classItem = event.target.closest('.class-item');
+        if (classItem) {
+            const checkbox = classItem.querySelector('.class-checkbox');
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state
+        }
+    });
 
     console.log(classList);
 });
