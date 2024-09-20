@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 (selectedCategory === 'uncategorized' && classInfo.category === null) ||
                 (classInfo.category === selectedCategory);
 
-            // Check if the classInfo's category matches the selected category
             return matchesSearchTerm && matchesCategory;
         });
 

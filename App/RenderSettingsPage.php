@@ -132,7 +132,7 @@ class RenderSettingsPage
                     </label>
                     <?php foreach ($categories as $category): ?>
                         <label>
-                            <input type="radio" name="search_category" value="<?php echo esc_attr($category['id']); ?>"> <?php echo esc_html($category['name']); ?>
+                            <input type="radio" name="search_category" value="<?php echo esc_attr($category['name']); ?>"> <?php echo esc_html($category['name']); ?>
                         </label>
                     <?php endforeach; ?>
                 </div>
