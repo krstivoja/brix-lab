@@ -153,7 +153,7 @@ class RenderSettingsPage
                 <b><label>Assign to Category:</label></b>
                 <div class="ml-2 flex flex-col gap-2">
                     <label>
-                        <input type="radio" name="class_category" value="uncategorized" required> Uncategorized
+                        <input type="radio" name="class_category" value="uncategorized" required checked> Uncategorized
                     </label>
                     <?php foreach ($categories as $category): ?>
                         <label>
