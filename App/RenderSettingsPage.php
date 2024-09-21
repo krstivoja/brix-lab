@@ -82,7 +82,8 @@ class RenderSettingsPage
                 if ($search_term === '*' || strpos($class['name'], $search_term) !== false) {
                     // Replace the class name
                     $class['name'] = str_replace($search_term, $replace_term, $class['name']);
-                    $class['name'] = $prefix . $class['name'] . $suffix; // Add prefix and suffix
+                    // Add prefix and suffix
+                    $class['name'] = $prefix . $class['name'] . $suffix;
                 }
             }
         }

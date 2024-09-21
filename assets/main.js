@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Filter classes based on search term
     searchInput.addEventListener('input', function () {
+        console.log(searchInput.value); // Check the value of the search term
         filterClasses();
     });
 
@@ -36,18 +37,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function filterClasses() {
         const searchTerm = searchInput.value.toLowerCase();
+        const prefix = document.getElementById('prefix').value.toLowerCase();
+        const suffix = document.getElementById('suffix').value.toLowerCase();
         const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
 
         const filteredClasses = classList.filter(classInfo => {
-            // Check if the class name matches the search term
-            const matchesSearchTerm = classInfo.name.toLowerCase().includes(searchTerm);
+            // Check if the class name matches the search term with prefix and suffix
+            const fullClassName = `${prefix}${classInfo.name}${suffix}`.toLowerCase();
+            const matchesSearchTerm = fullClassName.includes(searchTerm);
 
             // Check if the class matches the selected category
             let matchesCategory = false;
             if (selectedCategory === 'all') {
                 matchesCategory = true; // Show all classes
             } else if (selectedCategory === 'uncategorized') {
-                // Check for null, undefined, or empty string for "Uncategorized"
                 matchesCategory = !classInfo.category || classInfo.category.trim() === '';
             } else {
                 matchesCategory = classInfo.category === selectedCategory;
