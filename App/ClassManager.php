@@ -23,7 +23,7 @@ class ClassManager
             </div>
             <div class="swk__form-group">
                 <b class="swk__label">Search in Categories:</b>
-                <div class="swk__radio-group">
+                <div id="swk-class__category-filter" class="swk__radio-group">
                     <label class="swk__radio-label">
                         <input type="radio" name="search_category" value="all" required checked class="swk__radio"> All
                     </label>
