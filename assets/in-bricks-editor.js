@@ -14,50 +14,24 @@ function initTest() {
             const { globalClasses, globalClassesCategories } = vueApp.$_state;
 
             // Create a mapping of category IDs to names
-            const categoryMap = Object.fromEntries(globalClassesCategories.map(category => [category.id, category.name]));
+            const categoryMap = createCategoryMap(globalClassesCategories);
 
             // Log all categories with correct names
-            const globalCategories = globalClasses.map(globalClass => ({
-                name: globalClass.name,
-                category: globalClass.category ? categoryMap[globalClass.category] : 'Uncategorized'
-            }));
-
+            const globalCategories = mapGlobalClasses(globalClasses, categoryMap);
             console.log('Global Categories:', globalCategories);
 
             // Populate #classes-list with global classes
-            const classesList = document.getElementById('classes-list');
-            if (classesList) {
-                // Clear existing content and change to <ul>
-                classesList.innerHTML = ''; // Clear existing content
-                const ul = document.createElement('ul'); // Create a new <ul>
-
-                globalCategories.forEach(globalClass => {
-                    const li = document.createElement('li'); // Create a new <li>
-                    li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
-                    ul.appendChild(li); // Append <li> to <ul>
-                });
-
-                classesList.appendChild(ul); // Append <ul> to #classes-list
-            } else {
-                console.error('#classes-list element not found');
-            }
+            populateClassesList(globalCategories);
 
             // Populate radio buttons from existing categories
-            const categoryRadiosContainer = document.querySelector('.swk__radio-group');
-            globalClassesCategories.forEach(category => {
-                const label = document.createElement('label');
-                label.className = 'swk__radio-label';
+            populateCategoryRadios(globalClassesCategories);
 
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'search_category';
-                input.value = category.name; // Assuming category has an 'id' property
-                input.className = 'swk__radio';
-
-                label.appendChild(input);
-                label.appendChild(document.createTextNode(category.name)); // Assuming category has a 'name' property
-
-                categoryRadiosContainer.appendChild(label);
+            // Add event listener for category filtering
+            const categoryRadios = document.querySelectorAll('input[name="search_category"]');
+            categoryRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    filterClasses(globalCategories); // Pass globalCategories here
+                });
             });
         } else {
             console.error('__vue_app__ is not defined on brx-body');
@@ -70,6 +44,74 @@ function initTest() {
     if (swissKnifeLab) {
         swissKnifeLab.style.display = 'block';
         bricksToolbar.appendChild(swissKnifeLab);
+    }
+}
+
+function createCategoryMap(categories) {
+    return Object.fromEntries(categories.map(category => [category.id, category.name]));
+}
+
+function mapGlobalClasses(globalClasses, categoryMap) {
+    return globalClasses.map(globalClass => ({
+        name: globalClass.name,
+        category: globalClass.category != null ? categoryMap[globalClass.category] : 'Uncategorized'
+    }));
+}
+
+function populateClassesList(globalCategories) {
+    const classesList = document.getElementById('classes-list');
+    if (classesList) {
+        classesList.innerHTML = ''; // Clear existing content
+        const ul = document.createElement('ul'); // Create a new <ul>
+
+        globalCategories.forEach(globalClass => {
+            const li = document.createElement('li'); // Create a new <li>
+            li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+            ul.appendChild(li); // Append <li> to <ul>
+        });
+
+        classesList.appendChild(ul); // Append <ul> to #classes-list
+    } else {
+        console.error('#classes-list element not found');
+    }
+}
+
+function populateCategoryRadios(globalClassesCategories) {
+    const categoryRadiosContainer = document.querySelector('.swk__radio-group');
+    globalClassesCategories.forEach(category => {
+        const label = document.createElement('label');
+        label.className = 'swk__radio-label';
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'search_category';
+        input.value = category.name; // Assuming category has an 'id' property
+        input.className = 'swk__radio';
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(category.name)); // Assuming category has a 'name' property
+
+        categoryRadiosContainer.appendChild(label);
+    });
+}
+
+// Function to filter classes based on selected category
+function filterClasses(globalCategories) {
+    const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
+    const classesList = document.getElementById('classes-list');
+    const ul = classesList.querySelector('ul');
+
+    if (ul) {
+        const filteredClasses = globalCategories.filter(globalClass => {
+            return selectedCategory === 'all' || globalClass.category === selectedCategory;
+        });
+
+        ul.innerHTML = ''; // Clear existing list
+        filteredClasses.forEach(globalClass => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+            ul.appendChild(li);
+        });
     }
 }
 

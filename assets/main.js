@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Filter classes based on search term
     searchInput.addEventListener('input', function () {
-        console.log(searchInput.value); // Check the value of the search term
         filterClasses();
     });
 
