@@ -28,9 +28,8 @@ class ClassManager
                         <input type="radio" name="search_category" value="all" required checked class="swk__radio"> All
                     </label>
                     <label class="swk__radio-label">
-                        <input type="radio" name="search_category" value="uncategorized" class="swk__radio">
-                        Uncategorized
-                    </label>
+    <input type="radio" name="search_category" value="Uncategorized" class="swk__radio"> Uncategorized
+</label>
                 </div>
             </div>
             <div class="swk__form-group">
