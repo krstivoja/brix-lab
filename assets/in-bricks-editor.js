@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', initTest);
+
 function initTest() {
     const brxBody = document.querySelector('.brx-body');
     if (!brxBody) {
@@ -5,50 +7,47 @@ function initTest() {
         return;
     }
 
-    // Use a timeout to allow Vue to initialize
-    setTimeout(() => {
-        if (brxBody.__vue_app__) {
-            const vueApp = brxBody.__vue_app__.config.globalProperties;
+    // Initialize when Vue is ready
+    waitForVueApp(brxBody, vueApp => {
+        const { globalClasses, globalClassesCategories } = vueApp.$_state;
 
-            // Get global classes and categories
-            const { globalClasses, globalClassesCategories } = vueApp.$_state;
+        const categoryMap = createCategoryMap(globalClassesCategories);
+        const globalCategories = mapGlobalClasses(globalClasses, categoryMap);
 
-            // Create a mapping of category IDs to names
-            const categoryMap = createCategoryMap(globalClassesCategories);
+        console.log('Global Categories:', globalCategories);
 
-            // Log all categories with correct names
-            const globalCategories = mapGlobalClasses(globalClasses, categoryMap);
-            console.log('Global Categories:', globalCategories);
+        populateClassesList(globalCategories);
+        populateCategoryRadios(globalClassesCategories);
 
-            // Populate #classes-list with global classes
-            populateClassesList(globalCategories);
+        const categoryRadios = document.querySelectorAll('input[name="search_category"]');
+        categoryRadios.forEach(radio => {
+            radio.addEventListener('change', () => filterClasses(globalCategories));
+        });
 
-            // Populate radio buttons from existing categories
-            populateCategoryRadios(globalClassesCategories);
-
-            // Add event listener for category filtering
-            const categoryRadios = document.querySelectorAll('input[name="search_category"]');
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    filterClasses(globalCategories); // Pass globalCategories here
-                });
-            });
-        } else {
-            console.error('__vue_app__ is not defined on brx-body');
+        const searchInput = document.getElementById('search_term');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => filterClasses(globalCategories));
         }
-    }, 1000); // Adjust the timeout as necessary
+    });
 
-    const swissKnifeLab = document.getElementById('swiss-knife-lab');
-    const bricksToolbar = document.querySelector('#bricks-toolbar > ul.group-wrapper.left');
+    handleSwissKnifeLabDisplay();
+}
 
-    if (swissKnifeLab) {
-        swissKnifeLab.style.display = 'block';
-        bricksToolbar.appendChild(swissKnifeLab);
-    }
+function waitForVueApp(element, callback) {
+    const observer = new MutationObserver(() => {
+        if (element.__vue_app__) {
+            observer.disconnect();
+            callback(element.__vue_app__.config.globalProperties);
+        }
+    });
+    observer.observe(element, { childList: true });
 }
 
 function createCategoryMap(categories) {
-    return Object.fromEntries(categories.map(category => [category.id, category.name]));
+    return categories.reduce((map, category) => {
+        map[category.id] = category.name;
+        return map;
+    }, {});
 }
 
 function mapGlobalClasses(globalClasses, categoryMap) {
@@ -60,24 +59,32 @@ function mapGlobalClasses(globalClasses, categoryMap) {
 
 function populateClassesList(globalCategories) {
     const classesList = document.getElementById('classes-list');
-    if (classesList) {
-        classesList.innerHTML = ''; // Clear existing content
-        const ul = document.createElement('ul'); // Create a new <ul>
-
-        globalCategories.forEach(globalClass => {
-            const li = document.createElement('li'); // Create a new <li>
-            li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
-            ul.appendChild(li); // Append <li> to <ul>
-        });
-
-        classesList.appendChild(ul); // Append <ul> to #classes-list
-    } else {
+    if (!classesList) {
         console.error('#classes-list element not found');
+        return;
     }
+
+    const ul = document.createElement('ul');
+    const fragment = document.createDocumentFragment();
+
+    globalCategories.forEach(globalClass => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+        fragment.appendChild(li);
+    });
+
+    ul.appendChild(fragment);
+    classesList.innerHTML = '';
+    classesList.appendChild(ul);
 }
 
 function populateCategoryRadios(globalClassesCategories) {
     const categoryRadiosContainer = document.querySelector('.swk__radio-group');
+    if (!categoryRadiosContainer) {
+        console.error('.swk__radio-group element not found');
+        return;
+    }
+
     globalClassesCategories.forEach(category => {
         const label = document.createElement('label');
         label.className = 'swk__radio-label';
@@ -85,34 +92,55 @@ function populateCategoryRadios(globalClassesCategories) {
         const input = document.createElement('input');
         input.type = 'radio';
         input.name = 'search_category';
-        input.value = category.name; // Assuming category has an 'id' property
+        input.value = category.name;
         input.className = 'swk__radio';
 
         label.appendChild(input);
-        label.appendChild(document.createTextNode(category.name)); // Assuming category has a 'name' property
+        label.appendChild(document.createTextNode(category.name));
 
         categoryRadiosContainer.appendChild(label);
     });
 }
 
-// Function to filter classes based on selected category
 function filterClasses(globalCategories) {
+    const searchTerm = document.getElementById('search_term').value.toLowerCase();
     const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
     const classesList = document.getElementById('classes-list');
-    const ul = classesList.querySelector('ul');
-
-    if (ul) {
-        const filteredClasses = globalCategories.filter(globalClass => {
-            return selectedCategory === 'all' || globalClass.category === selectedCategory;
-        });
-
-        ul.innerHTML = ''; // Clear existing list
-        filteredClasses.forEach(globalClass => {
-            const li = document.createElement('li');
-            li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
-            ul.appendChild(li);
-        });
+    if (!classesList) {
+        console.error('#classes-list element not found');
+        return;
     }
+
+    const ul = classesList.querySelector('ul');
+    if (!ul) return;
+
+    const filteredClasses = globalCategories.filter(globalClass => {
+        const classNameElement = document.createElement('div');
+        classNameElement.innerHTML = `<span class="swk__class-name">${globalClass.name}</span>`;
+        const classNameText = classNameElement.querySelector('.swk__class-name').textContent.toLowerCase();
+
+        return (selectedCategory === 'all' || globalClass.category === selectedCategory) &&
+            classNameText.includes(searchTerm);
+    });
+
+    ul.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    filteredClasses.forEach(globalClass => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+        fragment.appendChild(li);
+    });
+
+    ul.appendChild(fragment);
 }
 
-document.addEventListener('DOMContentLoaded', initTest);
+function handleSwissKnifeLabDisplay() {
+    const swissKnifeLab = document.getElementById('swiss-knife-lab');
+    const bricksToolbar = document.querySelector('#bricks-toolbar > ul.group-wrapper.left');
+
+    if (swissKnifeLab && bricksToolbar) {
+        swissKnifeLab.style.display = 'block';
+        bricksToolbar.appendChild(swissKnifeLab);
+    }
+}
