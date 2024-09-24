@@ -13,6 +13,8 @@
   left: 0;
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 9999;
+
+  //   display: none !important;
 }
 
 #swk__class-manager-panel {
@@ -24,9 +26,10 @@
   border-radius: var(--builder-border-radius);
   display: flex;
   gap: 4rem;
-}
-#swk__class-manager-panel > * {
-  width: 100%;
+
+  > * {
+    width: 100%;
+  }
 }
 
 .swk__form-group input {
