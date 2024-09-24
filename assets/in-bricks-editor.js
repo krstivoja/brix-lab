@@ -33,6 +33,16 @@ function initTest() {
         if (replaceInput) {
             replaceInput.addEventListener('input', () => filterClasses(globalCategories));
         }
+
+        const prefixInput = document.getElementById('prefix');
+        if (prefixInput) {
+            prefixInput.addEventListener('input', () => filterClasses(globalCategories));
+        }
+
+        const suffixInput = document.getElementById('suffix');
+        if (suffixInput) {
+            suffixInput.addEventListener('input', () => filterClasses(globalCategories));
+        }
     });
 
     handleSwissKnifeLabDisplay();
@@ -110,8 +120,11 @@ function populateCategoryRadios(globalClassesCategories) {
 function filterClasses(globalCategories) {
     const searchTerm = document.getElementById('search_term').value.toLowerCase();
     const replaceTerm = document.getElementById('replace_term').value;
+    const prefix = document.getElementById('prefix').value; // Get the prefix value
+    const suffix = document.getElementById('suffix').value; // Get the suffix value
     const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
     const classesList = document.getElementById('classes-list');
+
     if (!classesList) {
         console.error('#classes-list element not found');
         return;
@@ -137,6 +150,10 @@ function filterClasses(globalCategories) {
         if (replaceTerm) {
             modifiedClassName = modifiedClassName.replace(new RegExp(searchTerm, 'gi'), replaceTerm);
         }
+
+        // Add prefix and suffix
+        modifiedClassName = `${prefix}${modifiedClassName}${suffix}`;
+
         const li = document.createElement('li');
         li.innerHTML = `<span class="swk__class-name">${modifiedClassName}</span> <span class="swk__class-category">${globalClass.category}</span>`;
         fragment.appendChild(li);
