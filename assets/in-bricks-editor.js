@@ -28,6 +28,11 @@ function initTest() {
         if (searchInput) {
             searchInput.addEventListener('input', () => filterClasses(globalCategories));
         }
+
+        const replaceInput = document.getElementById('replace_term');
+        if (replaceInput) {
+            replaceInput.addEventListener('input', () => filterClasses(globalCategories));
+        }
     });
 
     handleSwissKnifeLabDisplay();
@@ -104,6 +109,7 @@ function populateCategoryRadios(globalClassesCategories) {
 
 function filterClasses(globalCategories) {
     const searchTerm = document.getElementById('search_term').value.toLowerCase();
+    const replaceTerm = document.getElementById('replace_term').value;
     const selectedCategory = document.querySelector('input[name="search_category"]:checked').value;
     const classesList = document.getElementById('classes-list');
     if (!classesList) {
@@ -127,8 +133,12 @@ function filterClasses(globalCategories) {
     const fragment = document.createDocumentFragment();
 
     filteredClasses.forEach(globalClass => {
+        let modifiedClassName = globalClass.name;
+        if (replaceTerm) {
+            modifiedClassName = modifiedClassName.replace(new RegExp(searchTerm, 'gi'), replaceTerm);
+        }
         const li = document.createElement('li');
-        li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+        li.innerHTML = `<span class="swk__class-name">${modifiedClassName}</span> <span class="swk__class-category">${globalClass.category}</span>`;
         fragment.appendChild(li);
     });
 
