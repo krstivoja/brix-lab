@@ -37,3 +37,23 @@
   padding: 1rem;
   width: 100%;
 }
+
+#classes-list ul {
+  list-style: none;
+  padding: 0;
+}
+#classes-list li {
+  border-bottom: 1px solid var(--builder-border-color);
+  padding: 1rem 0;
+  font-size: 1.2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+#classes-list .swk__class-category {
+  background-color: var(--builder-bg-2);
+  font-size: 0.9rem;
+  border-radius: var(--builder-border-radius);
+  padding: 0.5rem;
+  margin-left: auto;
+}

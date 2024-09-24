@@ -41,6 +41,24 @@ function initTest() {
             } else {
                 console.error('#classes-list element not found');
             }
+
+            // Populate radio buttons from existing categories
+            const categoryRadiosContainer = document.querySelector('.swk__radio-group');
+            globalClassesCategories.forEach(category => {
+                const label = document.createElement('label');
+                label.className = 'swk__radio-label';
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'search_category';
+                input.value = category.id; // Assuming category has an 'id' property
+                input.className = 'swk__radio';
+
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(category.name)); // Assuming category has a 'name' property
+
+                categoryRadiosContainer.appendChild(label);
+            });
         } else {
             console.error('__vue_app__ is not defined on brx-body');
         }
