@@ -32,13 +32,17 @@
   }
 }
 
-.swk__form-group input {
-  background-color: var(--builder-bg);
-  color: white;
-  border: 1px solid var(--builder-border-color);
-  border-radius: var(--builder-border-radius);
-  padding: 1rem;
-  width: 100%;
+.swk__form-group {
+  margin-bottom: 2rem;
+
+  input {
+    background-color: var(--builder-bg);
+    color: white;
+    border: 1px solid var(--builder-border-color);
+    border-radius: var(--builder-border-radius);
+    padding: 1rem;
+    width: 100%;
+  }
 }
 
 #classes-list {
@@ -63,4 +67,15 @@
     padding: 0.5rem;
     margin-left: auto;
   }
+}
+
+.swk__button {
+  width: 100%;
+  background-color: var(--builder-bg-2);
+  color: white;
+  border-radius: var(--builder-border-radius);
+  padding: 1rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  text-align: center;
 }
