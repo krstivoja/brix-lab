@@ -51,7 +51,7 @@ function initTest() {
                 const input = document.createElement('input');
                 input.type = 'radio';
                 input.name = 'search_category';
-                input.value = category.id; // Assuming category has an 'id' property
+                input.value = category.name; // Assuming category has an 'id' property
                 input.className = 'swk__radio';
 
                 label.appendChild(input);
