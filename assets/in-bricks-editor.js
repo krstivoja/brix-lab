@@ -27,11 +27,17 @@ function initTest() {
             // Populate #classes-list with global classes
             const classesList = document.getElementById('classes-list');
             if (classesList) {
+                // Clear existing content and change to <ul>
+                classesList.innerHTML = ''; // Clear existing content
+                const ul = document.createElement('ul'); // Create a new <ul>
+
                 globalCategories.forEach(globalClass => {
-                    const listItem = document.createElement('div');
-                    listItem.textContent = `${globalClass.name} - ${globalClass.category}`;
-                    classesList.appendChild(listItem);
+                    const li = document.createElement('li'); // Create a new <li>
+                    li.innerHTML = `<span class="swk__class-name">${globalClass.name}</span> <span class="swk__class-category">${globalClass.category}</span>`;
+                    ul.appendChild(li); // Append <li> to <ul>
                 });
+
+                classesList.appendChild(ul); // Append <ul> to #classes-list
             } else {
                 console.error('#classes-list element not found');
             }
