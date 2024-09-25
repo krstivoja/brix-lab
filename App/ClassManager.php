@@ -44,7 +44,7 @@ class ClassManager
                 <label for="suffix" class="swk__label">Add Suffix:</label>
                 <input type="text" id="suffix" name="suffix" class="swk__input">
             </div>
-            <button type="submit" class="swk__button">Update</button>
+            <button type="submit" class="swk__button--update-classes">Update</button>
         </div>
         <div id="classes-list" class="swk__classes-list">
 
