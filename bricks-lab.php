@@ -9,15 +9,9 @@ Author URI: https://example.com
 License: GPL2
 */
 
-require_once plugin_dir_path(__FILE__) . 'App/SettingsPage.php';
-require_once plugin_dir_path(__FILE__) . 'App/RenderSettingsPage.php';
+
 require_once plugin_dir_path(__FILE__) . 'App/ClassManager.php';
 
-// Enqueue scripts and styles
-add_action('admin_enqueue_scripts', function () {
-    wp_enqueue_style('settings-page-css', plugin_dir_url(__FILE__) . 'assets/style.css');
-    wp_enqueue_script('settings-page-js', plugin_dir_url(__FILE__) . 'assets/main.js', [], null, true);
-});
 
 add_action('wp_enqueue_scripts', function () {
     // Check if the Bricks builder function exists and is active, and not in iframe
@@ -35,3 +29,38 @@ add_action('wp_enqueue_scripts', function () {
         }
     }
 });
+
+add_action('wp_ajax_update_classes', 'update_classes_callback');
+
+function update_classes_callback()
+{
+    // Check for the required permissions
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Unauthorized', 403);
+        return;
+    }
+
+    // Get the posted data
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (isset($data['classes'])) {
+        // Retrieve the current global classes from the database
+        $global_classes = get_option(BRICKS_DB_GLOBAL_CLASSES, []);
+
+        // Update the global classes with the new names
+        foreach ($data['classes'] as $class) {
+            // Find the index of the class to update
+            $index = array_search($class['name'], array_column($global_classes, 'name'));
+            if ($index !== false) {
+                // Update the class name
+                $global_classes[$index]['name'] = $class['newName'];
+            }
+        }
+
+        // Save the updated global classes back to the database
+        update_option(BRICKS_DB_GLOBAL_CLASSES, $global_classes);
+
+        wp_send_json_success('Classes updated successfully');
+    } else {
+        wp_send_json_error('No classes provided');
+    }
+}

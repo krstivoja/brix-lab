@@ -43,6 +43,14 @@ function initTest() {
         if (suffixInput) {
             suffixInput.addEventListener('input', () => filterClasses(globalCategories));
         }
+
+        const updateButton = document.querySelector('.swk__button--update-classes');
+        if (updateButton) {
+            updateButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                updateClasses();
+            });
+        }
     });
 
     handleSwissKnifeLabDisplay();
@@ -170,4 +178,40 @@ function handleSwissKnifeLabDisplay() {
         swissKnifeLab.style.display = 'block';
         bricksToolbar.appendChild(swissKnifeLab);
     }
+}
+
+function updateClasses() {
+    const searchTerm = document.getElementById('search_term').value.toLowerCase(); // Define searchTerm here
+    const replaceTerm = document.getElementById('replace_term').value;
+    const prefix = document.getElementById('prefix').value;
+    const suffix = document.getElementById('suffix').value;
+
+    // Collect the classes to update
+    const classesToUpdate = Array.from(document.querySelectorAll('.swk__class-name')).map(classElement => {
+        return {
+            name: classElement.textContent,
+            newName: `${prefix}${classElement.textContent}${suffix}`.replace(new RegExp(searchTerm, 'gi'), replaceTerm)
+        };
+    });
+
+    // Make an AJAX call to update classes
+    fetch('/wp-admin/admin-ajax.php?action=update_classes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ classes: classesToUpdate }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Classes updated successfully:', data);
+                // Optionally refresh the classes list or show a success message
+            } else {
+                console.error('Error updating classes:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
