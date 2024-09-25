@@ -15,6 +15,7 @@ class ClassManager
 
 <div class="popup-bg">
     <div id="swk__class-manager-panel">
+        <button class="swk__close-button">Close</button>
         <div class="swk__search-form">
             <h3>Search form</h3>
             <div class="swk__form-group">
