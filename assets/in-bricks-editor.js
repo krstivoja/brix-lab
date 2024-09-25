@@ -51,10 +51,40 @@ function initTest() {
                 updateClasses();
             });
         }
+
+        // Add event listener to show the popup
+        const swissKnifeLab = document.getElementById('swiss-knife-lab');
+        if (swissKnifeLab) {
+            swissKnifeLab.addEventListener('click', () => {
+                const popupBg = document.querySelector('.popup-bg');
+                if (popupBg) {
+                    popupBg.style.display = 'flex'; // Show the popup
+                }
+            });
+        }
+
+        // Add event listener to close the popup
+        const closeButton = document.querySelector('.swk__close-button');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                const popupBg = document.querySelector('.popup-bg');
+                if (popupBg) {
+                    popupBg.style.display = 'none'; // Hide the popup
+                }
+            });
+        }
     });
 
     handleSwissKnifeLabDisplay();
 }
+
+// Ensure the popup is hidden on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const popupBg = document.querySelector('.popup-bg');
+    if (popupBg) {
+        popupBg.style.display = 'none'; // Hide the popup initially
+    }
+});
 
 function waitForVueApp(element, callback) {
     const observer = new MutationObserver(() => {
